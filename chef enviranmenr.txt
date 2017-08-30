@@ -1,0 +1,102 @@
+enviranments on chef :
+
+now we create one cookbook 
+
+knife cookbook create [cookbookname]
+
+attributes directory:
+=====================
+
+step 1: we create default.rb file then write bellow code:
+
+syntax:
+
+default['cookbookname']['Listen']='portnumber'
+
+code:
+
+default['web']['Listen']='81'   ( no space in between )
+
+-----------------------------
+
+file's directory:
+=================
+
+step 2: now we create index.html file on files directory 
+
+vi  files/default/index.html 
+
+
+
+<html> <body> <h1> 'welcome to chef enviranmetal world'</h1></body></html>
+
+we write content here
+
+------------------------
+
+step 3: now we got templats directory
+
+cd templates/default/
+
+now we copy httpd conf file from client machine's
+ 
+step a: copy the httpd.conf file node to workstation at the templates/default/
+
+ 
+scp -r user@ip:conf file location[node]  .--( current location )[workstation location]   
+
+httd.conf
+
+step b: now  we rename the httpd.conf file
+
+mv httpd.conf httpd.conf.erb
+
+step c: now we edit the httpd.conf.erb file add bellow data
+vi httpd.conf.erb
+
+#Listen 80  (To commit this line0
+
+Listen <%=node['cookbookname'][
+Listen <%=node['web']['Listen']%> (we add the this at bellow Listen line)
+
+---------------
+
+recipes:
+========
+
+step 4: now we go to recipes directory and write  bellow code in side the default.rb file
+
+
+vi default.rb
+
+package "httpd" do
+
+action :install
+
+end
+
+service "httpd" do
+
+action [ :enable, :start]
+
+end
+
+
+template "/etc/httpd/conf/httpd.conf" do
+
+
+source "httpd.conf.erb"
+
+end
+cookbook_file "/var/www/html/index.html" do
+
+source "index.html" 
+
+end
+
+
+
+
+
+
+ 
